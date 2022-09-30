@@ -115,7 +115,7 @@ const Todo: React.FC<TodoState> = ({
 	date,
 	remove = () => {},
 	check = () => {},
-	update = (a, b) => {},
+	update = (a: any, b: any) => {},
 }) => {
 	const fontColor = useColorModeValue("gray.900", "gray.50");
 	const finishedFontColor = useColorModeValue("gray.300", "gray.600");

@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon } from "@chakra-ui/icons";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { shadow, shadowHover } from "../libs/shadow";
 
 type TypeDeleteButton = {
@@ -139,17 +139,37 @@ const Todo: React.FC<TodoState> = ({
 		update(id, inputValue);
 	}
 
-	const inputRef = useRef<HTMLInputElement>(null);
+	const inputRef = useRef<HTMLTextAreaElement>(null);
 	function onEnterPress(e: any) {
 		if (e.key !== "Enter") return;
 		if (inputRef.current) inputRef.current.blur();
 	}
+
+	function resizeTextarea() {
+		const el = inputRef.current;
+		if (!el) return;
+
+		el.style.height = "1rem";
+
+		const height = inputRef.current.scrollHeight + "px";
+		el.style.height = height;
+	}
+
+	useEffect(() => {
+		resizeTextarea();
+
+		window.addEventListener("resize", resizeTextarea);
+
+		return () => {
+			window.removeEventListener("resize", resizeTextarea);
+		};
+	}, []);
 	return (
 		<Flex w="100%" boxShadow={shadowColor} my="1rem" pos="relative">
 			<CheckButton id={id} check={check} finish={finish} />
 			<Box flex="1" p="0.5rem" pos="relative">
 				{!finish ? (
-					<input
+					<textarea
 						color={colors.finish}
 						style={{
 							width: "100%",
@@ -157,9 +177,14 @@ const Todo: React.FC<TodoState> = ({
 							wordBreak: "break-word",
 							outline: "none",
 							backgroundColor: "transparent",
+							resize: "none",
+							overflowY: "hidden",
 						}}
 						value={inputValue}
-						onChange={onChangeInputValue}
+						onChange={(e) => {
+							onChangeInputValue(e);
+							resizeTextarea();
+						}}
 						onBlur={leaveFocus}
 						onKeyPress={onEnterPress}
 						ref={inputRef}

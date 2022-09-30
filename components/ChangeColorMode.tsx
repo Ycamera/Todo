@@ -29,7 +29,7 @@ const Circle: React.FC = () => {
 	const mode = colorMode === "light" ? "light" : "dark";
 
 	return (
-		<Motion variants={variants} initial={mode} animate={mode}>
+		<Motion variants={variants} initial={false} animate={mode}>
 			<Flex
 				alignItems="center"
 				borderRadius="50%"

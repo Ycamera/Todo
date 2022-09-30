@@ -1,5 +1,5 @@
 function defaultShadow(alpha: number, custom?: string) {
-	let shadow = `0 0.1rem 0.5rem -0.2rem rgba(0,0,0,${alpha})`;
+	let shadow = `0 0.2rem 0.6rem -0.2rem rgba(0,0,0,${alpha})`;
 	if (custom) shadow = custom;
 
 	return `${shadow},inset 0 0.15rem 0.4rem -0.2rem transparent`;

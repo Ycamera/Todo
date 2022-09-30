@@ -26,7 +26,7 @@ import ChangeColorMode from "../components/ChangeColorMode";
 import getDate from "../libs/getDate";
 
 import { saveTodosOnLocalStrage } from "../libs/localStorage";
-import { Todos, DoneTodos } from "../components/Todos";
+import { Todos, DoneTodos, ClearDoneTodos } from "../components/Todos";
 import { TodoState, TodoAction } from "../libs/type";
 
 type FormProps = {
@@ -56,55 +56,6 @@ const Form: React.FC<FormProps> = ({ onChangeInputValue, inputValue, add }) => {
 	);
 };
 
-type ClearProps = {
-	todos: TodoState[];
-	clear: () => void;
-};
-
-const Clear: React.FC<ClearProps> = ({ todos, clear }) => {
-	const fontColor = useColorModeValue("gray.400", "gray.600");
-	const fontColorHover = useColorModeValue("gray.200", "gray.700");
-
-	const iconColor = useColorModeValue("gray.200", "gray.600");
-
-	const underbarColor = useColorModeValue("gray.300", "gray.500");
-
-	return (
-		<>
-			{todos.some((todo) => todo.finish) && (
-				<Flex color={fontColor} alignItems="center" justifyContent="end">
-					<Box
-						cursor="pointer"
-						pos="relative"
-						onClick={clear}
-						transition="0.5s"
-						_after={{
-							content: "''",
-							pos: "absolute",
-							bottom: 0,
-							left: "50%",
-							transform: "translateX(-50%)",
-							w: 0,
-							h: "0.06rem",
-							bg: underbarColor,
-							transition: "0.5s",
-						}}
-						_hover={{
-							_after: {
-								w: "100%",
-							},
-							color: fontColorHover,
-						}}
-					>
-						<SmallCloseIcon w="1.4rem" h="1.4rem" color={iconColor} />
-						clear all
-					</Box>
-				</Flex>
-			)}
-		</>
-	);
-};
-
 function todoReducer(state: TodoState[], action: any) {
 	let index;
 	let returnState: TodoState[];
@@ -129,7 +80,6 @@ function todoReducer(state: TodoState[], action: any) {
 			if (index < 0) return state;
 
 			returnState = state.slice();
-
 			const finish = returnState[index].finish;
 			returnState.splice(index, 1, { ...returnState[index], finish: !finish });
 
@@ -140,6 +90,15 @@ function todoReducer(state: TodoState[], action: any) {
 			const filteredState = state.filter((todo) => !todo.finish);
 			saveTodosOnLocalStrage(filteredState);
 			return filteredState;
+		case "update":
+			index = state.findIndex((todo) => todo.id === action.id);
+			if (index < 0) return state;
+
+			returnState = state.slice();
+			returnState.splice(index, 1, { ...returnState[index], content: action.content });
+
+			saveTodosOnLocalStrage(returnState);
+			return returnState;
 
 		case "loadLocalTodos":
 			return action.localTodos;
@@ -172,6 +131,10 @@ const Home: NextPage = () => {
 	}
 	function clearChecked() {
 		setTodos({ type: "clearChecked" });
+	}
+
+	function update(id: string, content: string) {
+		setTodos({ type: "update", id: id, content: content });
 	}
 
 	function loadTodos() {
@@ -209,7 +172,7 @@ const Home: NextPage = () => {
 					</Heading>
 
 					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
-					<Todos todos={todos} commands={{ remove: remove, check: check }} />
+					<Todos todos={todos} commands={{ remove: remove, check: check, update: update }} />
 
 					<Heading
 						as="h2"
@@ -221,8 +184,7 @@ const Home: NextPage = () => {
 					>
 						Done
 					</Heading>
-					<Clear todos={todos} clear={clearChecked} />
-
+					<ClearDoneTodos todos={todos} clear={clearChecked} />
 					<DoneTodos todos={todos} commands={{ remove: remove, check: check }} />
 				</MyContainer>
 			</Layout>

@@ -5,6 +5,7 @@ export type TodoState = {
 	date: string;
 	remove?: () => void;
 	check?: () => void;
+	update?: () => void;
 };
 
 export type TodoAction = {

@@ -12,9 +12,9 @@ import {
 	useColorModeValue,
 	useColorMode,
 } from "@chakra-ui/react";
-import { AddIcon, CheckIcon, DeleteIcon, CheckCircleIcon } from "@chakra-ui/icons";
+import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon } from "@chakra-ui/icons";
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import { shadow, shadowHover } from "../libs/shadow";
 
 type TypeDeleteButton = {
@@ -66,15 +66,6 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 
 	const checkColor = useColorModeValue("teal.500", "teal.200");
 
-	const shadowColor = useColorModeValue(
-		"0 0.1rem 1rem -0.1rem rgba(0,0,0,0.2)",
-		"inset 0 -0.1rem 1rem -0.1rem  rgba(255,255,255,0.2)"
-	);
-	const shadowColorHover = useColorModeValue(
-		"inset 0 0.3rem 0.2rem -0.1rem rgba(0,0,0,0.2)",
-		"inset 0 -0.1rem 1rem -0.1rem  rgba(255,255,255,0.2)"
-	);
-
 	const { colorMode } = useColorMode();
 
 	return (
@@ -102,7 +93,7 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 				transition: "0.3s",
 				pointerEvents: "none",
 
-				boxShadow: shadow(colorMode),
+				boxShadow: !finish ? shadow(colorMode) : shadowHover(colorMode),
 			}}
 			_hover={{
 				bg: bgColorHover,
@@ -117,7 +108,15 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 	);
 };
 
-const Todo: React.FC<TodoState> = ({ id, content, finish, date, remove = () => {}, check = () => {} }) => {
+const Todo: React.FC<TodoState> = ({
+	id,
+	content,
+	finish,
+	date,
+	remove = () => {},
+	check = () => {},
+	update = (a, b) => {},
+}) => {
 	const fontColor = useColorModeValue("gray.900", "gray.50");
 	const finishedFontColor = useColorModeValue("gray.300", "gray.600");
 
@@ -130,18 +129,51 @@ const Todo: React.FC<TodoState> = ({ id, content, finish, date, remove = () => {
 		"0 0.2rem 0.5rem -0.3rem rgba(0,0,0,0.5)"
 	);
 
+	const [inputValue, setInputValue] = useState(content);
+
+	function onChangeInputValue(e: any) {
+		setInputValue(e.target.value);
+	}
+
+	function leaveFocus() {
+		update(id, inputValue);
+	}
+
+	const inputRef = useRef<HTMLInputElement>(null);
+	function onEnterPress(e: any) {
+		if (e.key !== "Enter") return;
+		if (inputRef.current) inputRef.current.blur();
+	}
 	return (
 		<Flex w="100%" boxShadow={shadowColor} my="1rem" pos="relative">
 			<CheckButton id={id} check={check} finish={finish} />
 			<Box flex="1" p="0.5rem" pos="relative">
-				<Text
-					color={colors.finish}
-					whiteSpace="unset"
-					wordBreak={"break-word"}
-					{...(finish && { textDecoration: "line-through" })}
-				>
-					{content}
-				</Text>
+				{!finish ? (
+					<input
+						color={colors.finish}
+						style={{
+							width: "100%",
+							whiteSpace: "unset",
+							wordBreak: "break-word",
+							outline: "none",
+							backgroundColor: "transparent",
+						}}
+						value={inputValue}
+						onChange={onChangeInputValue}
+						onBlur={leaveFocus}
+						onKeyPress={onEnterPress}
+						ref={inputRef}
+					/>
+				) : (
+					<Text
+						color={colors.finish}
+						whiteSpace="unset"
+						wordBreak={"break-word"}
+						{...(finish && { textDecoration: "line-through" })}
+					>
+						{inputValue}
+					</Text>
+				)}
 			</Box>
 
 			<DeleteButton id={id} remove={remove} />
@@ -166,5 +198,54 @@ export const DoneTodos: React.FC<TodosProps> = ({ todos, commands }) => {
 				return todo.finish && <Todo {...todo} {...commands} key={todo.id} />;
 			})}
 		</Box>
+	);
+};
+
+type ClearProps = {
+	todos: TodoState[];
+	clear: () => void;
+};
+
+export const ClearDoneTodos: React.FC<ClearProps> = ({ todos, clear }) => {
+	const fontColor = useColorModeValue("gray.400", "gray.600");
+	const fontColorHover = useColorModeValue("gray.300", "gray.700");
+
+	const iconColor = useColorModeValue("gray.200", "gray.600");
+
+	const underbarColor = useColorModeValue("gray.300", "gray.500");
+
+	return (
+		<>
+			{todos.some((todo) => todo.finish) && (
+				<Flex color={fontColor} alignItems="center" justifyContent="end">
+					<Box
+						cursor="pointer"
+						pos="relative"
+						onClick={clear}
+						transition="0.5s"
+						_after={{
+							content: "''",
+							pos: "absolute",
+							bottom: 0,
+							left: "50%",
+							transform: "translateX(-50%)",
+							w: 0,
+							h: "0.06rem",
+							bg: underbarColor,
+							transition: "0.5s",
+						}}
+						_hover={{
+							_after: {
+								w: "100%",
+							},
+							color: fontColorHover,
+						}}
+					>
+						<SmallCloseIcon w="1.4rem" h="1.4rem" color={iconColor} />
+						clear all
+					</Box>
+				</Flex>
+			)}
+		</>
 	);
 };

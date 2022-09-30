@@ -167,7 +167,7 @@ const Todo: React.FC<TodoState> = ({
 	return (
 		<Flex w="100%" boxShadow={shadowColor} my="1rem" pos="relative">
 			<CheckButton id={id} check={check} finish={finish} />
-			<Box flex="1" p="0.5rem" pos="relative">
+			<Flex flex="1" p="0.5rem" pos="relative" alignItems="center">
 				{!finish ? (
 					<textarea
 						color={colors.finish}
@@ -199,7 +199,7 @@ const Todo: React.FC<TodoState> = ({
 						{inputValue}
 					</Text>
 				)}
-			</Box>
+			</Flex>
 
 			<DeleteButton id={id} remove={remove} />
 		</Flex>

@@ -8,7 +8,7 @@ import { shadow, shadowHover } from "../libs/shadow";
 import { formatWithOptions } from "util";
 
 const Circle: React.FC = () => {
-	const { colorMode, toggleColorMode } = useColorMode();
+	const { colorMode } = useColorMode();
 
 	const shadowColor = useColorModeValue(
 		"0 0.1rem 0.5rem -0.1rem rgba(0,0,0,0.3)",
@@ -43,18 +43,6 @@ const Circle: React.FC = () => {
 		</Motion>
 	);
 };
-type IconSlotProps = {
-	children: ReactNode;
-};
-const IconSlot: React.FC<IconSlotProps> = ({ children }) => {
-	const { colorMode } = useColorMode();
-
-	return (
-		<Slot h="1rem" w="1rem" filter={`drop-shadow(0 0.1rem 0.1rem rgba(0,0,0,${colorMode === "light" ? 0.2 : 1}))`}>
-			{children}
-		</Slot>
-	);
-};
 
 const ChangeColorMode = () => {
 	const { colorMode, toggleColorMode } = useColorMode();
@@ -62,7 +50,7 @@ const ChangeColorMode = () => {
 	const sunColor = useColorModeValue("gray.400", "gray.600");
 	const moonColor = useColorModeValue("gray.300", "gray.400");
 
-	useEffect(() => {});
+	const iconFilter = `drop-shadow(0 0.1rem 0.1rem rgba(0,0,0,${colorMode === "light" ? 0.2 : 1}))`;
 
 	return (
 		<Flex justifyContent="end" w="100%" mt="2rem">
@@ -89,14 +77,10 @@ const ChangeColorMode = () => {
 				<Flex pos="relative">
 					<Circle />
 					<Flex justifyContent="center" alignItems="center" w="1.4rem" h="1.4rem" mr="0.5rem">
-						<IconSlot>
-							<SunIcon color={sunColor} />
-						</IconSlot>
+						<SunIcon color={sunColor} h="1rem" w="1rem" filter={iconFilter} />
 					</Flex>
 					<Flex justifyContent="center" alignItems="center" w="1.4rem" h="1.4rem">
-						<IconSlot>
-							<MoonIcon color={moonColor} />
-						</IconSlot>
+						<MoonIcon color={moonColor} h="1rem" w="1rem" filter={iconFilter} />
 					</Flex>
 				</Flex>
 			</Flex>

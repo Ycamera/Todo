@@ -105,7 +105,7 @@ const Clear: React.FC<ClearProps> = ({ todos, clear }) => {
 
 function todoReducer(state: TodoState[], action: TodoAction) {
 	let index;
-	let returnState;
+	let returnState: TodoState[];
 
 	switch (action.type) {
 		case "add":
@@ -149,7 +149,7 @@ function todoReducer(state: TodoState[], action: TodoAction) {
 
 const Home: NextPage = () => {
 	const { colorMode } = useColorMode();
-	const [todos, setTodos] = useReducer(todoReducer, []);
+	const [todos, setTodos] = useReducer<>(todoReducer, []);
 
 	const [inputValue, setInputValue] = useState<string>("");
 

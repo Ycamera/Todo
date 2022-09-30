@@ -10,7 +10,7 @@ export type TodoState = {
 export type TodoAction = {
 	type: string;
 	id?: string;
-	content?: string;
+	content: string;
 	localTodos?: TodoState[];
 };
 

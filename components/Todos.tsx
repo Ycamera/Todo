@@ -15,7 +15,7 @@ import {
 import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon } from "@chakra-ui/icons";
 
 import React, { useState, useRef, useEffect } from "react";
-import { shadow, shadowHover } from "../libs/shadow";
+import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
 
 type TypeDeleteButton = {
 	id: string;
@@ -117,17 +117,14 @@ const Todo: React.FC<TodoState> = ({
 	check = () => {},
 	update = (a: any, b: any) => {},
 }) => {
+	const { colorMode } = useColorMode();
+
 	const fontColor = useColorModeValue("gray.900", "gray.50");
 	const finishedFontColor = useColorModeValue("gray.300", "gray.600");
 
 	const colors = {
 		finish: finish ? finishedFontColor : fontColor,
 	};
-
-	const shadowColor = useColorModeValue(
-		"0 0.2rem 0.5rem -0.3rem rgba(0,0,0,0.3)",
-		"0 0.2rem 0.5rem -0.3rem rgba(0,0,0,0.5)"
-	);
 
 	const [inputValue, setInputValue] = useState(content);
 
@@ -165,7 +162,7 @@ const Todo: React.FC<TodoState> = ({
 		};
 	}, []);
 	return (
-		<Flex w="100%" boxShadow={shadowColor} my="1rem" pos="relative">
+		<Flex w="100%" boxShadow={shallowShadow(colorMode)} my="1rem" pos="relative">
 			<CheckButton id={id} check={check} finish={finish} />
 			<Flex flex="1" p="0.5rem" pos="relative" alignItems="center">
 				{!finish ? (

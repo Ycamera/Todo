@@ -28,6 +28,7 @@ import getDate from "../libs/getDate";
 import { saveTodosOnLocalStrage } from "../libs/localStorage";
 import { Todos, DoneTodos, ClearDoneTodos } from "../components/Todos";
 import { TodoState, TodoAction } from "../libs/type";
+import { shallowShadow } from "../libs/shadow";
 
 type FormProps = {
 	onChangeInputValue: (e: any) => void;
@@ -35,24 +36,29 @@ type FormProps = {
 	add: () => void;
 };
 const Form: React.FC<FormProps> = ({ onChangeInputValue, inputValue, add }) => {
+	const { colorMode } = useColorMode();
+
 	function pressEnter(e: any) {
 		if (e.key !== "Enter") return;
 
 		add();
 	}
+
 	return (
-		<FormControl display="flex" mt="2rem">
-			<Input
-				type="text"
-				borderRightRadius={0}
-				onChange={onChangeInputValue}
-				value={inputValue}
-				onKeyPress={pressEnter}
-			/>
-			<Button colorScheme="teal" borderLeftRadius={0} onClick={add}>
-				<AddIcon />
-			</Button>
-		</FormControl>
+		<Box mt="2rem" boxShadow={shallowShadow(colorMode)} borderRadius="0.5rem">
+			<FormControl display="flex">
+				<Input
+					type="text"
+					borderRightRadius={0}
+					onChange={onChangeInputValue}
+					value={inputValue}
+					onKeyPress={pressEnter}
+				/>
+				<Button colorScheme="teal" borderLeftRadius={0} onClick={add}>
+					<AddIcon />
+				</Button>
+			</FormControl>
+		</Box>
 	);
 };
 

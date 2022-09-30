@@ -20,3 +20,8 @@ export function shadowHover(colorMode: string) {
 	if (colorMode === "light") return defaultShadowHover(0.4);
 	return defaultShadowHover(1, "inset 0 0.2rem 0.5rem -0.2rem rgba(0,0,0,1)");
 }
+
+export function shallowShadow(colorMode: string) {
+	if (colorMode === "light") return "0 0.2rem 0.5rem -0.3rem rgba(0,0,0,0.3)";
+	return "0 0.2rem 0.5rem -0.3rem rgba(0,0,0,0.5)";
+}

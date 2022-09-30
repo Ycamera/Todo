@@ -176,16 +176,18 @@ const Home: NextPage = () => {
 					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
 					<Todos todos={todos} commands={{ remove: remove, check: check, update: update }} />
 
-					<Heading
-						as="h2"
-						fontSize="1.5rem"
-						mx="auto"
-						textAlign={"center"}
-						mt="8rem"
-						color={finishedFontColor}
-					>
-						Done
-					</Heading>
+					{todos.some((todo) => todo.finish) && (
+						<Heading
+							as="h2"
+							fontSize="1.5rem"
+							mx="auto"
+							textAlign={"center"}
+							mt="8rem"
+							color={finishedFontColor}
+						>
+							Done
+						</Heading>
+					)}
 					<ClearDoneTodos todos={todos} clear={clearChecked} />
 					<DoneTodos todos={todos} commands={{ remove: remove, check: check }} />
 				</MyContainer>

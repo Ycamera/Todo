@@ -176,7 +176,7 @@ const Home: NextPage = () => {
 					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
 					<Todos todos={todos} commands={{ remove: remove, check: check, update: update }} />
 
-					{todos.some((todo) => todo.finish) && (
+					{todos.some((todo: TodoState) => todo.finish) && (
 						<Heading
 							as="h2"
 							fontSize="1.5rem"

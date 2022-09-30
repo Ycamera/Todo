@@ -4,7 +4,7 @@ import { useEffect, useState, useReducer } from "react";
 import { v4 as uuid } from "uuid";
 import React from "react";
 
-import Motion from "/components/Motion";
+import Motion from "../components/Motion";
 
 import {
 	Box,
@@ -70,40 +70,42 @@ const Clear: React.FC<ClearProps> = ({ todos, clear }) => {
 	const underbarColor = useColorModeValue("gray.300", "gray.500");
 
 	return (
-		todos.some((todo) => todo.finish) && (
-			<Flex color={fontColor} alignItems="center" justifyContent="end">
-				<Box
-					cursor="pointer"
-					pos="relative"
-					onClick={clear}
-					transition="0.5s"
-					_after={{
-						content: "''",
-						pos: "absolute",
-						bottom: 0,
-						left: "50%",
-						transform: "translateX(-50%)",
-						w: 0,
-						h: "0.06rem",
-						bg: underbarColor,
-						transition: "0.5s",
-					}}
-					_hover={{
-						_after: {
-							w: "100%",
-						},
-						color: fontColorHover,
-					}}
-				>
-					<SmallCloseIcon w="1.4rem" h="1.4rem" color={iconColor} />
-					clear all
-				</Box>
-			</Flex>
-		)
+		<>
+			{todos.some((todo) => todo.finish) && (
+				<Flex color={fontColor} alignItems="center" justifyContent="end">
+					<Box
+						cursor="pointer"
+						pos="relative"
+						onClick={clear}
+						transition="0.5s"
+						_after={{
+							content: "''",
+							pos: "absolute",
+							bottom: 0,
+							left: "50%",
+							transform: "translateX(-50%)",
+							w: 0,
+							h: "0.06rem",
+							bg: underbarColor,
+							transition: "0.5s",
+						}}
+						_hover={{
+							_after: {
+								w: "100%",
+							},
+							color: fontColorHover,
+						}}
+					>
+						<SmallCloseIcon w="1.4rem" h="1.4rem" color={iconColor} />
+						clear all
+					</Box>
+				</Flex>
+			)}
+		</>
 	);
 };
 
-function todoReducer(state: TodoState[], action: TodoAction) {
+function todoReducer(state: TodoState[], action: any) {
 	let index;
 	let returnState: TodoState[];
 
@@ -149,7 +151,7 @@ function todoReducer(state: TodoState[], action: TodoAction) {
 
 const Home: NextPage = () => {
 	const { colorMode } = useColorMode();
-	const [todos, setTodos] = useReducer<>(todoReducer, []);
+	const [todos, setTodos] = useReducer(todoReducer, []);
 
 	const [inputValue, setInputValue] = useState<string>("");
 

@@ -128,7 +128,6 @@ const DragButton: React.FC<{ id: string }> = ({ id }) => {
 			}}
 			onTouchStart={(e) => {
 				dragTaskTouch(e, id);
-				console.log("a");
 			}}
 		>
 			<DragHandleIcon />
@@ -353,12 +352,11 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 		if (html) html.classList.add("grabbing");
 	}
 	function dragTaskTouch(e: any, id: string) {
-		console.log("a");
 		e.preventDefault();
 		setDragIdBoth(id);
 		getTopBottomOfTaskPosition();
-		window.addEventListener("mousemove", dragMove);
-		window.addEventListener("mousemove", dragSwitchPosition);
+		window.addEventListener("touchmove", dragMove);
+		window.addEventListener("touchmove", dragSwitchPosition);
 		window.addEventListener("mouseup", resetDrag);
 
 		const html = document.querySelector("html");

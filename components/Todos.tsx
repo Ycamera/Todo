@@ -357,7 +357,7 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 		getTopBottomOfTaskPosition();
 		window.addEventListener("touchmove", dragMove);
 		window.addEventListener("touchmove", dragSwitchPosition);
-		window.addEventListener("mouseup", resetDrag);
+		window.addEventListener("touchend", resetDrag);
 
 		const html = document.querySelector("html");
 		if (html) html.classList.add("grabbing");
@@ -366,9 +366,14 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 	function resetDrag() {
 		setClosestPositionBoth({ distance: 0, id: "", position: "" });
 		setDragIdBoth("");
+
 		window.removeEventListener("mousemove", dragMove);
 		window.removeEventListener("mousemove", dragSwitchPosition);
 		window.removeEventListener("mouseup", resetDrag);
+
+		window.removeEventListener("touchmove", dragMove);
+		window.removeEventListener("touchmove", dragSwitchPosition);
+		window.removeEventListener("touchend", resetDrag);
 
 		const html = document.querySelector("html");
 		if (html) html.classList.remove("grabbing");

@@ -355,13 +355,13 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 		e.preventDefault();
 	}
 	function dragTaskTouch(e: any, id: string) {
-		e.preventDefault();
 		setDragIdBoth(id);
 		getTopBottomOfTaskPosition();
-		window.addEventListener("touchmove", dragMove);
-		window.addEventListener("touchmove", dragSwitchPosition);
+
+		window.addEventListener("touchmove", dragMove, { passive: false });
+		window.addEventListener("touchmove", dragSwitchPosition, { passive: false });
 		window.addEventListener("touchmove", noScroll);
-		window.addEventListener("touchend", resetDrag);
+		window.addEventListener("touchend", resetDrag, { passive: false });
 
 		const html = document.querySelector("html");
 		if (html) html.classList.add("grabbing");

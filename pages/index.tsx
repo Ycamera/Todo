@@ -17,6 +17,7 @@ import {
 	Text,
 	useColorMode,
 	useColorModeValue,
+	Switch,
 } from "@chakra-ui/react";
 import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon } from "@chakra-ui/icons";
 
@@ -30,41 +31,15 @@ import { Todos, DoneTodos, ClearDoneTodos } from "../components/Todos";
 import { TodoState, TodoAction } from "../libs/type";
 import { shallowShadow } from "../libs/shadow";
 
-type FormProps = {
-	onChangeInputValue: (e: any) => void;
-	inputValue: string;
-	add: () => void;
-};
-const Form: React.FC<FormProps> = ({ onChangeInputValue, inputValue, add }) => {
-	const { colorMode } = useColorMode();
-
-	function pressEnter(e: any) {
-		if (e.key !== "Enter") return;
-
-		add();
-	}
-
-	return (
-		<Box mt="2rem" boxShadow={shallowShadow(colorMode)} borderRadius="0.5rem">
-			<FormControl display="flex">
-				<Input
-					type="text"
-					borderRightRadius={0}
-					onChange={onChangeInputValue}
-					value={inputValue}
-					onKeyPress={pressEnter}
-				/>
-				<Button colorScheme="teal" borderLeftRadius={0} onClick={add}>
-					<AddIcon />
-				</Button>
-			</FormControl>
-		</Box>
-	);
-};
+import Form from "../components/Form";
 
 function todoReducer(state: TodoState[], action: any) {
 	let index;
 	let returnState: TodoState[];
+
+	function getIndexOfTodo(state: TodoState[], id: string) {
+		return state.findIndex((todo) => todo.id === id);
+	}
 
 	switch (action.type) {
 		case "add":
@@ -73,7 +48,7 @@ function todoReducer(state: TodoState[], action: any) {
 			return returnState;
 
 		case "remove":
-			index = state.findIndex((todo) => todo.id === action.id);
+			index = getIndexOfTodo(state, action.id);
 			if (index < 0) return state;
 
 			returnState = state.slice();
@@ -82,7 +57,7 @@ function todoReducer(state: TodoState[], action: any) {
 			return returnState;
 
 		case "check":
-			index = state.findIndex((todo) => todo.id === action.id);
+			index = getIndexOfTodo(state, action.id);
 			if (index < 0) return state;
 
 			returnState = state.slice();
@@ -97,7 +72,7 @@ function todoReducer(state: TodoState[], action: any) {
 			saveTodosOnLocalStrage(filteredState);
 			return filteredState;
 		case "update":
-			index = state.findIndex((todo) => todo.id === action.id);
+			index = getIndexOfTodo(state, action.id);
 			if (index < 0) return state;
 
 			returnState = state.slice();
@@ -108,6 +83,31 @@ function todoReducer(state: TodoState[], action: any) {
 
 		case "loadLocalTodos":
 			return action.localTodos;
+
+		case "switch":
+			const pos = action.pos;
+
+			const indexA = getIndexOfTodo(state, action.id);
+			let indexB = getIndexOfTodo(state, action.switchId);
+
+			if (indexA < 0 && indexB < 0) return state;
+
+			if (indexA > indexB) {
+				if (pos === "bottom") indexB++;
+			} else {
+				if (pos === "top") indexB--;
+			}
+
+			if (indexA === indexB) return state;
+			console.log(indexA, indexB);
+
+			returnState = state.slice();
+
+			returnState.splice(indexA, 1);
+			returnState.splice(indexB, 0, { ...state[indexA] });
+
+			saveTodosOnLocalStrage(returnState);
+			return returnState;
 
 		default:
 			return state;
@@ -149,6 +149,10 @@ const Home: NextPage = () => {
 			setTodos({ type: "loadLocalTodos", localTodos: JSON.parse(localTodos) });
 		}
 	}
+
+	function switchTodo(id: string, switchId: string, pos: string) {
+		if (id && switchId && pos && id !== switchId) setTodos({ type: "switch", id, switchId, pos });
+	}
 	useEffect(() => {
 		loadTodos();
 	}, []);
@@ -180,7 +184,11 @@ const Home: NextPage = () => {
 					</Heading>
 
 					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
-					<Todos todos={todos} commands={{ remove: remove, check: check, update: update }} />
+					<Todos
+						todos={todos}
+						commands={{ remove: remove, check: check, update: update }}
+						switchTodo={switchTodo}
+					/>
 
 					{todos.some((todo: TodoState) => todo.finish) && (
 						<Heading

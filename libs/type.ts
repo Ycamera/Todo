@@ -6,6 +6,7 @@ export type TodoState = {
 	remove?: () => void;
 	check?: () => void;
 	update?: () => void;
+	closestPosition?: TaskPosition;
 };
 
 export type TodoAction = {
@@ -15,7 +16,20 @@ export type TodoAction = {
 	localTodos?: TodoState[];
 };
 
+type SwitchTodo = {
+	id: string;
+	switchId: string;
+	pos: string;
+};
+
 export type TodosProps = {
 	todos: TodoState[];
 	commands: any;
+	switchTodo?: (id: string, switchId: string, pos: string) => void;
+};
+
+export type TaskPosition = {
+	distance: number;
+	id: string;
+	position: string;
 };

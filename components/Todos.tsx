@@ -1,4 +1,4 @@
-import { TodoState, TodosProps } from "../libs/type";
+import { TodoState, TodosProps, TaskPosition } from "../libs/type";
 import {
 	Box,
 	Flex,
@@ -11,17 +11,32 @@ import {
 	color,
 	useColorModeValue,
 	useColorMode,
+	position,
 } from "@chakra-ui/react";
-import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon } from "@chakra-ui/icons";
+import { Reorder } from "framer-motion";
+import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
+import { prepareServerlessUrl } from "next/dist/server/base-server";
 
-type TypeDeleteButton = {
+type DeleteButtonProps = {
 	id: string;
 	remove: (id: string) => void;
 };
-const DeleteButton: React.FC<TypeDeleteButton> = ({ id, remove }) => {
+
+const buttonStyle = {
+	display: "flex",
+	w: "2.5rem",
+	h: "auto",
+	alignItems: "center",
+	justifyContent: "center",
+	cursor: "pointer",
+
+	transition: "0.3s",
+};
+
+const DeleteButton: React.FC<DeleteButtonProps> = ({ id, remove }) => {
 	const deleteColor = useColorModeValue("gray.500", "gray.400");
 
 	const bgColor = useColorModeValue("gray.100", "gray.700");
@@ -29,16 +44,10 @@ const DeleteButton: React.FC<TypeDeleteButton> = ({ id, remove }) => {
 
 	return (
 		<Box
-			display={"flex"}
-			w="2.5rem"
-			h="auto"
-			alignItems="center"
-			justifyContent="center"
-			cursor="pointer"
-			pos="relative"
-			borderRightRadius={5}
+			{...buttonStyle}
 			bg={bgColor}
-			transition="0.3s"
+			borderRightRadius={5}
+			pos="relative"
 			onClick={() => {
 				remove(id);
 			}}
@@ -70,16 +79,10 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 
 	return (
 		<Box
-			display={"flex"}
-			w="2.5rem"
-			h="auto"
-			alignItems="center"
-			justifyContent="center"
-			cursor="pointer"
+			{...buttonStyle}
 			pos="relative"
 			borderLeftRadius={5}
 			bg={bgColor}
-			transition="0.3s"
 			onClick={() => {
 				check(id);
 			}}
@@ -108,6 +111,42 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 	);
 };
 
+const TaskPositionContext = React.createContext<any>(null);
+
+const DragButton: React.FC<{ id: string }> = ({ id }) => {
+	const taskDrag = useContext(TaskPositionContext);
+	return (
+		<Box
+			{...buttonStyle}
+			pos="relative"
+			onMouseDown={() => {
+				taskDrag(id);
+			}}
+		>
+			<DragHandleIcon />
+		</Box>
+	);
+};
+
+const SwitchLine: React.FC = () => {
+	const lineColor = useColorModeValue(
+		"linear-gradient(to right ,transparent 0%, rgba(49, 151, 149, 0.8), transparent 100%)",
+		"linear-gradient(to right ,transparent 0%, rgba(49, 151, 149, 0.8), transparent 100%)"
+	);
+
+	return (
+		<Box
+			as="span"
+			display="block"
+			w="100%"
+			h="0.2rem"
+			bg={lineColor}
+			// borderBottom="0.1rem solid"
+			// borderTop="0.1rem solid"
+		/>
+	);
+};
+
 const Todo: React.FC<TodoState> = ({
 	id,
 	content,
@@ -116,6 +155,7 @@ const Todo: React.FC<TodoState> = ({
 	remove = () => {},
 	check = () => {},
 	update = (a: any, b: any) => {},
+	closestPosition,
 }) => {
 	const { colorMode } = useColorMode();
 
@@ -161,55 +201,165 @@ const Todo: React.FC<TodoState> = ({
 			window.removeEventListener("resize", resizeTextarea);
 		};
 	}, []);
-	return (
-		<Flex w="100%" boxShadow={shallowShadow(colorMode)} my="1rem" pos="relative">
-			<CheckButton id={id} check={check} finish={finish} />
-			<Flex flex="1" p="0.5rem" pos="relative" alignItems="center">
-				{!finish ? (
-					<textarea
-						color={colors.finish}
-						style={{
-							width: "100%",
-							whiteSpace: "unset",
-							wordBreak: "break-word",
-							outline: "none",
-							backgroundColor: "transparent",
-							resize: "none",
-							overflowY: "hidden",
-						}}
-						value={inputValue}
-						onChange={(e) => {
-							onChangeInputValue(e);
-							resizeTextarea();
-						}}
-						onBlur={leaveFocus}
-						onKeyPress={onEnterPress}
-						ref={inputRef}
-					/>
-				) : (
-					<Text
-						color={colors.finish}
-						whiteSpace="unset"
-						wordBreak={"break-word"}
-						{...(finish && { textDecoration: "line-through" })}
-					>
-						{inputValue}
-					</Text>
-				)}
-			</Flex>
 
-			<DeleteButton id={id} remove={remove} />
-		</Flex>
+	return (
+		<>
+			{closestPosition?.position === "top" && <SwitchLine />}
+			<Flex
+				w="100%"
+				boxShadow={shallowShadow(colorMode)}
+				my="1rem"
+				pos="relative"
+				{...(!finish && { className: "task" })}
+				id={id}
+				userSelect="none"
+			>
+				<CheckButton id={id} check={check} finish={finish} />
+				<Flex flex="1" p="0.5rem" pos="relative" alignItems="center">
+					{!finish ? (
+						<textarea
+							color={colors.finish}
+							style={{
+								width: "100%",
+								whiteSpace: "unset",
+								wordBreak: "break-word",
+								outline: "none",
+								backgroundColor: "transparent",
+								resize: "none",
+								overflowY: "hidden",
+							}}
+							value={inputValue}
+							onChange={(e) => {
+								onChangeInputValue(e);
+								resizeTextarea();
+							}}
+							onBlur={leaveFocus}
+							onKeyPress={onEnterPress}
+							ref={inputRef}
+						/>
+					) : (
+						<Text
+							color={colors.finish}
+							whiteSpace="unset"
+							wordBreak={"break-word"}
+							{...(finish && { textDecoration: "line-through" })}
+						>
+							{inputValue}
+						</Text>
+					)}
+				</Flex>
+				{!finish && <DragButton id={id} />}
+				<DeleteButton id={id} remove={remove} />
+			</Flex>
+			{closestPosition?.position === "bottom" && <SwitchLine />}
+		</>
 	);
 };
 
-export const Todos: React.FC<TodosProps> = ({ todos, commands }) => {
+export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, b) => {} }) => {
+	const tasksRef = useRef<HTMLDivElement>(null);
+
+	let taskPosition: TaskPosition[] = [];
+	let dragId = "";
+	const [closestPosition, setClosestPosition] = useState<TaskPosition>();
+	let closestPositionCurrent: TaskPosition;
+
+	function setClosestPositionBoth(pos: TaskPosition) {
+		setClosestPosition(pos);
+		closestPositionCurrent = pos;
+	}
+
+	function getTopBottomOfTaskPosition() {
+		if (!tasksRef.current) return;
+		taskPosition = [];
+
+		const parent = tasksRef.current;
+		const children = parent.children;
+
+		for (let i = 0; i < children.length; i++) {
+			const el = children[i];
+			const className = el.classList.contains("task");
+			if (!className) continue;
+
+			const rect = el.getBoundingClientRect();
+
+			const top = rect.top;
+			const bottom = rect.bottom;
+			const id = el.id;
+
+			taskPosition = [
+				...taskPosition,
+				{ distance: top, id: id, position: "top" },
+				{ distance: bottom, id: id, position: "bottom" },
+			];
+		}
+	}
+
+	function abs(a: number, b: number) {
+		return Math.abs(a - b);
+	}
+
+	function dragMove(e: any) {
+		//ここにタスクを動かす際の判定、処理を記述
+		//task のtop bottom　位置は、tasksPositionのStateを参考に行う
+		//pageY の位置に一番近いtop / bottom の位置を　抽出する
+
+		const positions = taskPosition;
+
+		const y = e.pageY;
+
+		positions.forEach((pos) => {
+			const gap = abs(pos.distance, y);
+			if (!closestPositionCurrent) return setClosestPositionBoth(pos);
+
+			const previousGap = abs(closestPositionCurrent.distance, y);
+			if (gap < previousGap) {
+				setClosestPositionBoth(pos);
+			}
+		});
+	}
+
+	function dragSwitchPosition() {
+		const id = dragId;
+
+		const switchId = closestPositionCurrent?.id;
+		const pos = closestPositionCurrent?.position;
+
+		switchTodo(id, switchId, pos);
+		setClosestPositionBoth({ distance: 0, id: "", position: "" });
+	}
+
+	function dragTask(id: string) {
+		dragId = id;
+		getTopBottomOfTaskPosition();
+		window.addEventListener("mousemove", dragMove);
+		window.addEventListener("mouseup", dragSwitchPosition);
+		window.addEventListener("mouseup", resetDrag);
+	}
+
+	function resetDrag() {
+		window.removeEventListener("mousemove", dragMove);
+		window.removeEventListener("mouseup", dragSwitchPosition);
+		window.removeEventListener("mouseup", resetDrag);
+	}
+
 	return (
-		<Box mt="2rem">
-			{todos.map((todo) => {
-				return !todo.finish && <Todo {...todo} {...commands} key={todo.id} />;
-			})}
-		</Box>
+		<TaskPositionContext.Provider value={dragTask}>
+			<Box mt="2rem" ref={tasksRef}>
+				{todos.map((todo) => {
+					return (
+						!todo.finish && (
+							<Todo
+								{...todo}
+								{...commands}
+								key={todo.id}
+								{...(todo.id === closestPosition?.id && { closestPosition: closestPosition })}
+							/>
+						)
+					);
+				})}
+			</Box>
+		</TaskPositionContext.Provider>
 	);
 };
 

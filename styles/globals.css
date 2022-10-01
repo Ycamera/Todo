@@ -10,6 +10,7 @@ html {
 	font-size: max(14px, 1.1vw);
 }
 .grabbing {
+	pointer-events: none;
 	cursor: grabbing !important;
 }
 

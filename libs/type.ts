@@ -7,6 +7,7 @@ export type TodoState = {
 	check?: () => void;
 	update?: () => void;
 	closestPosition?: TaskPosition;
+	dragId?: string;
 };
 
 export type TodoAction = {

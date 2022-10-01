@@ -13,12 +13,13 @@ import {
 	useColorMode,
 	position,
 } from "@chakra-ui/react";
-import { Reorder } from "framer-motion";
+import { AnimatePresence, Reorder } from "framer-motion";
 import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
 import { prepareServerlessUrl } from "next/dist/server/base-server";
+import Motion from "../components/Motion";
 
 type DeleteButtonProps = {
 	id: string;
@@ -70,7 +71,6 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 	const bgColor = useColorModeValue("gray.100", "gray.700");
 	const bgColorHover = useColorModeValue("gray.200", "gray.600");
 
-	// const borderColor = useColorModeValue("gray.300", "gray.500");
 	const borderColorHover = useColorModeValue("gray.400", "gray.400");
 
 	const checkColor = useColorModeValue("teal.500", "teal.200");
@@ -115,10 +115,13 @@ const TaskPositionContext = React.createContext<any>(null);
 
 const DragButton: React.FC<{ id: string }> = ({ id }) => {
 	const taskDrag = useContext(TaskPositionContext);
+	const iconColor = useColorModeValue("gray.500", "gray.400");
+
 	return (
 		<Box
 			{...buttonStyle}
 			pos="relative"
+			color={iconColor}
 			onMouseDown={() => {
 				taskDrag(id);
 			}}
@@ -156,6 +159,7 @@ const Todo: React.FC<TodoState> = ({
 	check = () => {},
 	update = (a: any, b: any) => {},
 	closestPosition,
+	dragId,
 }) => {
 	const { colorMode } = useColorMode();
 
@@ -208,6 +212,7 @@ const Todo: React.FC<TodoState> = ({
 			<Flex
 				w="100%"
 				boxShadow={shallowShadow(colorMode)}
+				{...(dragId === id && { boxShadow: "0 0.3rem 0.4rem -0.3rem  rgba(0,0,0,0.8)" })}
 				my="1rem"
 				pos="relative"
 				{...(!finish && { className: "task" })}
@@ -260,10 +265,16 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 	const tasksRef = useRef<HTMLDivElement>(null);
 
 	let taskPosition: TaskPosition[] = [];
-	let dragId = "";
+	const [dragId, setDragId] = useState<string>("");
+
+	let dragIdCurrent: string = "";
 	const [closestPosition, setClosestPosition] = useState<TaskPosition>();
 	let closestPositionCurrent: TaskPosition;
 
+	function setDragIdBoth(id: string) {
+		setDragId(id);
+		dragIdCurrent = id;
+	}
 	function setClosestPositionBoth(pos: TaskPosition) {
 		setClosestPosition(pos);
 		closestPositionCurrent = pos;
@@ -320,17 +331,18 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 	}
 
 	function dragSwitchPosition() {
-		const id = dragId;
+		const id = dragIdCurrent;
 
 		const switchId = closestPositionCurrent?.id;
 		const pos = closestPositionCurrent?.position;
 
 		switchTodo(id, switchId, pos);
 		setClosestPositionBoth({ distance: 0, id: "", position: "" });
+		setDragIdBoth("");
 	}
 
 	function dragTask(id: string) {
-		dragId = id;
+		setDragIdBoth(id);
 		getTopBottomOfTaskPosition();
 		window.addEventListener("mousemove", dragMove);
 		window.addEventListener("mouseup", dragSwitchPosition);
@@ -342,6 +354,11 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 		window.removeEventListener("mouseup", dragSwitchPosition);
 		window.removeEventListener("mouseup", resetDrag);
 	}
+	useEffect(() => {
+		return () => {
+			resetDrag();
+		};
+	}, []);
 
 	return (
 		<TaskPositionContext.Provider value={dragTask}>
@@ -354,6 +371,7 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 								{...commands}
 								key={todo.id}
 								{...(todo.id === closestPosition?.id && { closestPosition: closestPosition })}
+								dragId={dragId}
 							/>
 						)
 					);

@@ -99,7 +99,6 @@ function todoReducer(state: TodoState[], action: any) {
 			}
 
 			if (indexA === indexB) return state;
-			console.log(indexA, indexB);
 
 			returnState = state.slice();
 

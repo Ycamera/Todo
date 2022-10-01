@@ -360,7 +360,7 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 
 		window.addEventListener("touchmove", dragMove, { passive: false });
 		window.addEventListener("touchmove", dragSwitchPosition, { passive: false });
-		window.addEventListener("touchmove", noScroll);
+		window.addEventListener("touchmove", noScroll, { passive: false });
 		window.addEventListener("touchend", resetDrag, { passive: false });
 
 		const html = document.querySelector("html");

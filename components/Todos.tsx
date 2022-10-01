@@ -114,7 +114,7 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 const TaskPositionContext = React.createContext<any>(null);
 
 const DragButton: React.FC<{ id: string }> = ({ id }) => {
-	const taskDrag = useContext(TaskPositionContext);
+	const { dragTask, dragTaskTouch } = useContext(TaskPositionContext);
 	const iconColor = useColorModeValue("gray.500", "gray.400");
 
 	return (
@@ -124,7 +124,11 @@ const DragButton: React.FC<{ id: string }> = ({ id }) => {
 			pos="relative"
 			color={iconColor}
 			onMouseDown={() => {
-				taskDrag(id);
+				dragTask(id);
+			}}
+			onTouchStart={(e) => {
+				dragTaskTouch(e, id);
+				console.log("a");
 			}}
 		>
 			<DragHandleIcon />
@@ -348,6 +352,18 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 		const html = document.querySelector("html");
 		if (html) html.classList.add("grabbing");
 	}
+	function dragTaskTouch(e: any, id: string) {
+		console.log("a");
+		e.preventDefault();
+		setDragIdBoth(id);
+		getTopBottomOfTaskPosition();
+		window.addEventListener("mousemove", dragMove);
+		window.addEventListener("mousemove", dragSwitchPosition);
+		window.addEventListener("mouseup", resetDrag);
+
+		const html = document.querySelector("html");
+		if (html) html.classList.add("grabbing");
+	}
 
 	function resetDrag() {
 		setClosestPositionBoth({ distance: 0, id: "", position: "" });
@@ -366,7 +382,7 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 	}, []);
 
 	return (
-		<TaskPositionContext.Provider value={dragTask}>
+		<TaskPositionContext.Provider value={{ dragTask, dragTaskTouch }}>
 			<Box mt="2rem" ref={tasksRef}>
 				{todos.map((todo) => {
 					return (

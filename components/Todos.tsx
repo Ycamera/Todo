@@ -16,7 +16,7 @@ import {
 import { AnimatePresence, Reorder } from "framer-motion";
 import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, ReactNode } from "react";
 import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
 import { prepareServerlessUrl } from "next/dist/server/base-server";
 import Motion from "../components/Motion";
@@ -120,6 +120,7 @@ const DragButton: React.FC<{ id: string }> = ({ id }) => {
 	return (
 		<Box
 			{...buttonStyle}
+			cursor="grab"
 			pos="relative"
 			color={iconColor}
 			onMouseDown={() => {
@@ -131,24 +132,23 @@ const DragButton: React.FC<{ id: string }> = ({ id }) => {
 	);
 };
 
-const SwitchLine: React.FC = () => {
-	const lineColor = useColorModeValue(
-		"linear-gradient(to right ,transparent 0%, rgba(49, 151, 149, 0.8), transparent 100%)",
-		"linear-gradient(to right ,transparent 0%, rgba(49, 151, 149, 0.8), transparent 100%)"
-	);
+// const SwitchLine: React.FC<{ position?: string; children: ReactNode }> = ({ position, children }) => {
+// 	const lineColor = useColorModeValue(
+// 		"linear-gradient(to right ,transparent 0%, rgba(49, 151, 149, 0.8), transparent 100%)",
+// 		"linear-gradient(to right ,transparent 0%, rgba(49, 151, 149, 0.8), transparent 100%)"
+// 	);
+// 	const Line = () => {
+// 		return <Box as="span" display="block" w="100%" h="0.2rem" bg={lineColor} />;
+// 	};
 
-	return (
-		<Box
-			as="span"
-			display="block"
-			w="100%"
-			h="0.2rem"
-			bg={lineColor}
-			// borderBottom="0.1rem solid"
-			// borderTop="0.1rem solid"
-		/>
-	);
-};
+// 	return (
+// 		<>
+// 			{position === "top" && <Line />}
+// 			{children}
+// 			{position === "bottom" && <Line />}
+// 		</>
+// 	);
+// };
 
 const Todo: React.FC<TodoState> = ({
 	id,
@@ -208,11 +208,11 @@ const Todo: React.FC<TodoState> = ({
 
 	return (
 		<>
-			{closestPosition?.position === "top" && <SwitchLine />}
+			{/* <SwitchLine position={closestPosition?.position}> */}
 			<Flex
 				w="100%"
 				boxShadow={shallowShadow(colorMode)}
-				{...(dragId === id && { boxShadow: "0 0.3rem 0.4rem -0.3rem  rgba(0,0,0,0.8)" })}
+				{...(dragId === id && { boxShadow: "0 0 0.5rem -0.1rem rgba(49, 151, 149, 1)" })}
 				my="1rem"
 				pos="relative"
 				{...(!finish && { className: "task" })}
@@ -256,7 +256,7 @@ const Todo: React.FC<TodoState> = ({
 				{!finish && <DragButton id={id} />}
 				<DeleteButton id={id} remove={remove} />
 			</Flex>
-			{closestPosition?.position === "bottom" && <SwitchLine />}
+			{/* </SwitchLine> */}
 		</>
 	);
 };
@@ -294,8 +294,10 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 
 			const rect = el.getBoundingClientRect();
 
-			const top = rect.top;
-			const bottom = rect.bottom;
+			const y = window.pageYOffset;
+
+			const top = rect.top + y;
+			const bottom = top + rect.height;
 			const id = el.id;
 
 			taskPosition = [
@@ -311,10 +313,6 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 	}
 
 	function dragMove(e: any) {
-		//ここにタスクを動かす際の判定、処理を記述
-		//task のtop bottom　位置は、tasksPositionのStateを参考に行う
-		//pageY の位置に一番近いtop / bottom の位置を　抽出する
-
 		const positions = taskPosition;
 
 		const y = e.pageY;
@@ -337,22 +335,29 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 		const pos = closestPositionCurrent?.position;
 
 		switchTodo(id, switchId, pos);
-		setClosestPositionBoth({ distance: 0, id: "", position: "" });
-		setDragIdBoth("");
+		getTopBottomOfTaskPosition();
 	}
 
 	function dragTask(id: string) {
 		setDragIdBoth(id);
 		getTopBottomOfTaskPosition();
 		window.addEventListener("mousemove", dragMove);
-		window.addEventListener("mouseup", dragSwitchPosition);
+		window.addEventListener("mousemove", dragSwitchPosition);
 		window.addEventListener("mouseup", resetDrag);
+
+		const html = document.querySelector("html");
+		if (html) html.classList.add("grabbing");
 	}
 
 	function resetDrag() {
+		setClosestPositionBoth({ distance: 0, id: "", position: "" });
+		setDragIdBoth("");
 		window.removeEventListener("mousemove", dragMove);
-		window.removeEventListener("mouseup", dragSwitchPosition);
+		window.removeEventListener("mousemove", dragSwitchPosition);
 		window.removeEventListener("mouseup", resetDrag);
+
+		const html = document.querySelector("html");
+		if (html) html.classList.remove("grabbing");
 	}
 	useEffect(() => {
 		return () => {

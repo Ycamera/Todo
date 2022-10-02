@@ -6,20 +6,7 @@ import React from "react";
 
 import Motion from "../components/Motion";
 
-import {
-	Box,
-	Flex,
-	Heading,
-	Input,
-	FormLabel,
-	FormControl,
-	Button,
-	Text,
-	useColorMode,
-	useColorModeValue,
-	Switch,
-} from "@chakra-ui/react";
-import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon } from "@chakra-ui/icons";
+import { Box, Flex, Heading, useColorMode, useColorModeValue } from "@chakra-ui/react";
 
 import Layout from "../components/Layout";
 import MyContainer from "../components/MyContainer";
@@ -33,6 +20,7 @@ import { shallowShadow } from "../libs/shadow";
 
 import Form from "../components/Form";
 
+// let switchable = true;
 function todoReducer(state: TodoState[], action: any) {
 	let index;
 	let returnState: TodoState[];
@@ -71,6 +59,7 @@ function todoReducer(state: TodoState[], action: any) {
 			const filteredState = state.filter((todo) => !todo.finish);
 			saveTodosOnLocalStrage(filteredState);
 			return filteredState;
+
 		case "update":
 			index = getIndexOfTodo(state, action.id);
 			if (index < 0) return state;

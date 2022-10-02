@@ -274,6 +274,8 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 	const [closestPosition, setClosestPosition] = useState<TaskPosition>();
 	let closestPositionCurrent: TaskPosition;
 
+	let todoSwitchable: boolean = true;
+
 	function setDragIdBoth(id: string) {
 		setDragId(id);
 		dragIdCurrent = id;
@@ -301,12 +303,15 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 
 			const top = rect.top + y;
 			const bottom = top + rect.height;
+			const center = top + rect.height / 2;
+
 			const id = el.id;
 
 			taskPosition = [
 				...taskPosition,
-				{ distance: top, id: id, position: "top" },
-				{ distance: bottom, id: id, position: "bottom" },
+				{ distance: center, id: id, position: "center" },
+				// { distance: top, id: id, position: "top" },
+				// { distance: bottom, id: id, position: "bottom" },
 			];
 		}
 	}
@@ -316,6 +321,7 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 	}
 
 	function dragMove(e: any) {
+		getTopBottomOfTaskPosition();
 		const positions = taskPosition;
 
 		const y = e.pageY;
@@ -337,13 +343,23 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 		const switchId = closestPositionCurrent?.id;
 		const pos = closestPositionCurrent?.position;
 
+		if (id === switchId || !todoSwitchable) return;
+
+		if (pos === "center") {
+			todoSwitchable = false;
+			setTimeout(() => {
+				todoSwitchable = true;
+			}, 50);
+		}
+
 		switchTodo(id, switchId, pos);
-		getTopBottomOfTaskPosition();
+
+		setClosestPositionBoth({ distance: 0, id: "", position: "" });
 	}
 
 	function dragTask(id: string) {
 		setDragIdBoth(id);
-		getTopBottomOfTaskPosition();
+
 		window.addEventListener("mousemove", dragMove);
 		window.addEventListener("mousemove", dragSwitchPosition);
 		window.addEventListener("mouseup", resetDrag);
@@ -356,7 +372,6 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 	}
 	function dragTaskTouch(e: any, id: string) {
 		setDragIdBoth(id);
-		getTopBottomOfTaskPosition();
 
 		window.addEventListener("touchmove", dragMove, { passive: false });
 		window.addEventListener("touchmove", dragSwitchPosition, { passive: false });

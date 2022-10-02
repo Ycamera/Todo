@@ -190,7 +190,7 @@ const Home: NextPage = () => {
 							Done
 						</Heading>
 					)}
-					<ClearDoneTodos todos={todos} clear={clearChecked} />
+					<ClearDoneTodos todos={todos} clearChecked={clearChecked} />
 					<DoneTodos todos={todos} commands={{ remove: remove, check: check }} />
 				</MyContainer>
 			</Layout>

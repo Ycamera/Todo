@@ -161,7 +161,6 @@ const Todo: React.FC<TodoState> = ({
 	remove = () => {},
 	check = () => {},
 	update = (a: any, b: any) => {},
-	closestPosition,
 	dragId,
 }) => {
 	const { colorMode } = useColorMode();
@@ -441,10 +440,10 @@ export const DoneTodos: React.FC<TodosProps> = ({ todos, commands }) => {
 
 type ClearProps = {
 	todos: TodoState[];
-	clearDoneTodos: () => void;
+	clearChecked: () => void;
 };
 
-export const ClearDoneTodos: React.FC<ClearProps> = ({ todos, clearDoneTodos }) => {
+export const ClearDoneTodos: React.FC<ClearProps> = ({ todos, clearChecked }) => {
 	const fontColor = useColorModeValue("gray.400", "gray.600");
 	const fontColorHover = useColorModeValue("gray.300", "gray.700");
 
@@ -459,7 +458,7 @@ export const ClearDoneTodos: React.FC<ClearProps> = ({ todos, clearDoneTodos }) 
 					<Box
 						cursor="pointer"
 						pos="relative"
-						onClick={clearDoneTodos}
+						onClick={clearChecked}
 						transition="0.5s"
 						_after={{
 							content: "''",

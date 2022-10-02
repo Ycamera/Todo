@@ -215,12 +215,15 @@ const Todo: React.FC<TodoState> = ({
 			<Flex
 				w="100%"
 				boxShadow={shallowShadow(colorMode)}
-				{...(dragId === id && { boxShadow: "0 0 0.5rem -0.1rem rgba(49, 151, 149, 1)" })}
 				my="1rem"
 				pos="relative"
 				{...(!finish && { className: "task" })}
 				id={id}
 				userSelect="none"
+				{...(dragId === id && {
+					boxShadow:
+						"0 0.4rem 0.8rem -0.5rem rgba(49, 151, 149, 1), 0 -0.4rem 0.8rem -0.5rem rgba(49, 151, 149, 1)",
+				})}
 			>
 				<CheckButton id={id} check={check} finish={finish} />
 				<Flex flex="1" p="0.5rem" pos="relative" alignItems="center">
@@ -438,10 +441,10 @@ export const DoneTodos: React.FC<TodosProps> = ({ todos, commands }) => {
 
 type ClearProps = {
 	todos: TodoState[];
-	clear: () => void;
+	clearDoneTodos: () => void;
 };
 
-export const ClearDoneTodos: React.FC<ClearProps> = ({ todos, clear }) => {
+export const ClearDoneTodos: React.FC<ClearProps> = ({ todos, clearDoneTodos }) => {
 	const fontColor = useColorModeValue("gray.400", "gray.600");
 	const fontColorHover = useColorModeValue("gray.300", "gray.700");
 
@@ -456,7 +459,7 @@ export const ClearDoneTodos: React.FC<ClearProps> = ({ todos, clear }) => {
 					<Box
 						cursor="pointer"
 						pos="relative"
-						onClick={clear}
+						onClick={clearDoneTodos}
 						transition="0.5s"
 						_after={{
 							content: "''",

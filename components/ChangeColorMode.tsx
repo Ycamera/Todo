@@ -56,7 +56,6 @@ const ChangeColorMode = () => {
 		<Flex justifyContent="end" w="100%" mt="2rem">
 			<Flex
 				onClick={() => {
-					console.log(colorMode);
 					toggleColorMode();
 				}}
 				overflow="hidden"

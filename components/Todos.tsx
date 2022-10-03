@@ -1,26 +1,12 @@
-import {
-	Box,
-	Flex,
-	Heading,
-	Input,
-	FormLabel,
-	FormControl,
-	Button,
-	Text,
-	color,
-	useColorModeValue,
-	useColorMode,
-	position,
-} from "@chakra-ui/react";
-import { AnimatePresence, Reorder } from "framer-motion";
-import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
+import { Box, Flex, Text, useColorModeValue, useColorMode } from "@chakra-ui/react";
+import { CheckIcon, DeleteIcon, SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 
-import React, { useState, useRef, useEffect, useContext, ReactNode } from "react";
-import Motion from "../components/Motion";
+import React, { useState, useRef, useEffect, useContext } from "react";
 
 import { TodoState, TodosProps, TaskPosition } from "../libs/type";
 import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
 import { setInputValueDeleteMoreThanTwoSpaces } from "../libs/changeInputValue";
+import { getColors } from "../libs/getColors";
 
 type DeleteButtonProps = {
 	id: string;
@@ -39,25 +25,20 @@ const buttonStyle = {
 };
 
 const DeleteButton: React.FC<DeleteButtonProps> = ({ id, remove }) => {
-	const deleteColor = useColorModeValue("gray.500", "gray.400");
-
-	const bgColor = useColorModeValue("gray.100", "gray.700");
-	const bgColorHover = useColorModeValue("gray.200", "gray.600");
-
 	return (
 		<Box
 			{...buttonStyle}
-			bg={bgColor}
+			bg={getColors(useColorModeValue, "clickableBg")}
 			borderRightRadius={5}
 			pos="relative"
 			onClick={() => {
 				remove(id);
 			}}
 			_hover={{
-				bg: bgColorHover,
+				bg: getColors(useColorModeValue, "clickableBgHover"),
 			}}
 		>
-			<DeleteIcon w="1rem" h="1rem" color={deleteColor} />
+			<DeleteIcon w="1rem" h="1rem" color={getColors(useColorModeValue, "grayButton")} />
 		</Box>
 	);
 };
@@ -69,11 +50,6 @@ type CheckButtonProps = {
 };
 
 const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
-	const bgColor = useColorModeValue("gray.100", "gray.700");
-	const bgColorHover = useColorModeValue("gray.200", "gray.600");
-
-	const borderColorHover = useColorModeValue("gray.400", "gray.400");
-
 	const checkColor = useColorModeValue("teal.500", "teal.200");
 
 	const { colorMode } = useColorMode();
@@ -83,7 +59,7 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 			{...buttonStyle}
 			pos="relative"
 			borderLeftRadius={5}
-			bg={bgColor}
+			bg={getColors(useColorModeValue, "clickableBg")}
 			onClick={() => {
 				check(id);
 			}}
@@ -100,9 +76,8 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 				boxShadow: !finish ? shadow(colorMode) : shadowHover(colorMode),
 			}}
 			_hover={{
-				bg: bgColorHover,
+				bg: getColors(useColorModeValue, "clickableBgHover"),
 				_after: {
-					borderColor: borderColorHover,
 					boxShadow: shadowHover(colorMode),
 				},
 			}}
@@ -116,14 +91,13 @@ const TaskPositionContext = React.createContext<any>(null);
 
 const DragButton: React.FC<{ id: string }> = ({ id }) => {
 	const { dragTask, dragTaskTouch } = useContext(TaskPositionContext);
-	const iconColor = useColorModeValue("gray.500", "gray.400");
 
 	return (
 		<Box
 			{...buttonStyle}
 			cursor="grab"
 			pos="relative"
-			color={iconColor}
+			color={getColors(useColorModeValue, "grayButton")}
 			onMouseDown={() => {
 				dragTask(id);
 			}}
@@ -166,11 +140,8 @@ const Todo: React.FC<TodoState> = ({
 }) => {
 	const { colorMode } = useColorMode();
 
-	const fontColor = useColorModeValue("gray.900", "gray.50");
-	const finishedFontColor = useColorModeValue("gray.300", "gray.600");
-
 	const colors = {
-		finish: finish ? finishedFontColor : fontColor,
+		finish: finish ? getColors(useColorModeValue, "finishedFontColor") : getColors(useColorModeValue, "fontColor"),
 	};
 
 	const [inputValue, setInputValue] = useState(content);

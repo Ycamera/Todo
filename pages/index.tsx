@@ -3,25 +3,19 @@ import Head from "next/head";
 import { useEffect, useState, useReducer } from "react";
 import { v4 as uuid } from "uuid";
 import React from "react";
-
-import Motion from "../components/Motion";
-
-import { Box, Flex, Heading, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Heading, useColorMode, useColorModeValue } from "@chakra-ui/react";
 
 import Layout from "../components/Layout";
 import MyContainer from "../components/MyContainer";
 import ChangeColorMode from "../components/ChangeColorMode";
 import LoadingEffect from "../components/LoadingEffect";
+import Form from "../components/Form";
 
 import getDate from "../libs/getDate";
 import { saveTodosOnLocalStrage } from "../libs/localStorage";
 import { Todos, DoneTodos, ClearDoneTodos } from "../components/Todos";
-import { TodoState, TodoAction } from "../libs/type";
-import { shallowShadow } from "../libs/shadow";
+import { TodoState } from "../libs/type";
 import { setInputValueDeleteMoreThanTwoSpaces } from "../libs/changeInputValue";
-
-import Form from "../components/Form";
-import { off } from "process";
 
 // let switchable = true;
 function todoReducer(state: TodoState[], action: any) {
@@ -186,11 +180,7 @@ const Home: NextPage = () => {
 					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
 
 					<LoadingEffect loadFinished={loadFinished} />
-					<Todos
-						todos={todos}
-						commands={{ remove: remove, check: check, update: update }}
-						switchTodo={switchTodo}
-					/>
+					<Todos todos={todos} commands={{ remove, check, update }} switchTodo={switchTodo} />
 
 					{todos.some((todo: TodoState) => todo.finish) && (
 						<Heading

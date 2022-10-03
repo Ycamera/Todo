@@ -18,7 +18,6 @@ import { Todos, DoneTodos, ClearDoneTodos } from "../components/Todos";
 import { TodoState } from "../libs/type";
 import { setInputValueDeleteMoreThanTwoSpaces } from "../libs/changeInputValue";
 
-// let switchable = true;
 function todoReducer(state: TodoState[], action: any) {
 	let index;
 	let returnState: TodoState[];

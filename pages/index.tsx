@@ -3,13 +3,14 @@ import Head from "next/head";
 import { useEffect, useState, useReducer } from "react";
 import { v4 as uuid } from "uuid";
 import React from "react";
-import { Heading, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Box, Heading, useColorMode, useColorModeValue } from "@chakra-ui/react";
 
 import Layout from "../components/Layout";
 import MyContainer from "../components/MyContainer";
 import ChangeColorMode from "../components/ChangeColorMode";
 import LoadingEffect from "../components/LoadingEffect";
 import Form from "../components/Form";
+import Motion from "../components/Motion";
 
 import getDate from "../libs/getDate";
 import { saveTodosOnLocalStrage } from "../libs/localStorage";
@@ -141,8 +142,8 @@ const Home: NextPage = () => {
 		if (id && switchId && pos && id !== switchId) setTodos({ type: "switch", id, switchId, pos });
 	}
 	useEffect(() => {
+		loadTodos();
 		const timer = setTimeout(() => {
-			loadTodos();
 			setLoadFinished(true);
 		}, 500);
 
@@ -179,22 +180,31 @@ const Home: NextPage = () => {
 					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
 
 					<LoadingEffect loadFinished={loadFinished} />
-					<Todos todos={todos} commands={{ remove, check, update }} switchTodo={switchTodo} />
-
-					{todos.some((todo: TodoState) => todo.finish) && (
-						<Heading
-							as="h2"
-							fontSize="1.5rem"
-							mx="auto"
-							textAlign={"center"}
-							mt="8rem"
-							color={finishedFontColor}
+					{loadFinished && (
+						<Motion
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ duration: 0, delay: 0.01 }}
 						>
-							Done
-						</Heading>
+							<Box>
+								<Todos todos={todos} commands={{ remove, check, update }} switchTodo={switchTodo} />
+								{todos.some((todo: TodoState) => todo.finish) && (
+									<Heading
+										as="h2"
+										fontSize="1.5rem"
+										mx="auto"
+										textAlign={"center"}
+										mt="8rem"
+										color={finishedFontColor}
+									>
+										Done
+									</Heading>
+								)}
+								<ClearDoneTodos todos={todos} clearChecked={clearChecked} />
+								<DoneTodos todos={todos} commands={{ remove: remove, check: check }} />
+							</Box>
+						</Motion>
 					)}
-					<ClearDoneTodos todos={todos} clearChecked={clearChecked} />
-					<DoneTodos todos={todos} commands={{ remove: remove, check: check }} />
 				</MyContainer>
 			</Layout>
 		</>

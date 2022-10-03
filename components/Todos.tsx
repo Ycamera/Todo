@@ -278,7 +278,7 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 			const y = window.pageYOffset;
 
 			const top = rect.top + y;
-			const bottom = top + rect.height;
+			// const bottom = top + rect.height;
 			const center = top + rect.height / 2;
 
 			const id = el.id;

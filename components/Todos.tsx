@@ -1,4 +1,3 @@
-import { TodoState, TodosProps, TaskPosition } from "../libs/type";
 import {
 	Box,
 	Flex,
@@ -17,9 +16,11 @@ import { AnimatePresence, Reorder } from "framer-motion";
 import { AddIcon, CheckIcon, DeleteIcon, SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 
 import React, { useState, useRef, useEffect, useContext, ReactNode } from "react";
-import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
-import { prepareServerlessUrl } from "next/dist/server/base-server";
 import Motion from "../components/Motion";
+
+import { TodoState, TodosProps, TaskPosition } from "../libs/type";
+import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
+import { setInputValueDeleteMoreThanTwoSpaces } from "../libs/changeInputValue";
 
 type DeleteButtonProps = {
 	id: string;
@@ -175,7 +176,8 @@ const Todo: React.FC<TodoState> = ({
 	const [inputValue, setInputValue] = useState(content);
 
 	function onChangeInputValue(e: any) {
-		setInputValue(e.target.value);
+		const value = e.target.value;
+		setInputValueDeleteMoreThanTwoSpaces(setInputValue, value);
 	}
 
 	function leaveFocus() {
@@ -230,6 +232,7 @@ const Todo: React.FC<TodoState> = ({
 						<textarea
 							color={colors.finish}
 							style={{
+								height: "1rem",
 								width: "100%",
 								whiteSpace: "unset",
 								wordBreak: "break-word",

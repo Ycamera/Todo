@@ -11,14 +11,17 @@ import { Box, Flex, Heading, useColorMode, useColorModeValue } from "@chakra-ui/
 import Layout from "../components/Layout";
 import MyContainer from "../components/MyContainer";
 import ChangeColorMode from "../components/ChangeColorMode";
-import getDate from "../libs/getDate";
+import LoadingEffect from "../components/LoadingEffect";
 
+import getDate from "../libs/getDate";
 import { saveTodosOnLocalStrage } from "../libs/localStorage";
 import { Todos, DoneTodos, ClearDoneTodos } from "../components/Todos";
 import { TodoState, TodoAction } from "../libs/type";
 import { shallowShadow } from "../libs/shadow";
+import { setInputValueDeleteMoreThanTwoSpaces } from "../libs/changeInputValue";
 
 import Form from "../components/Form";
+import { off } from "process";
 
 // let switchable = true;
 function todoReducer(state: TodoState[], action: any) {
@@ -107,14 +110,16 @@ const Home: NextPage = () => {
 	const [todos, setTodos] = useReducer(todoReducer, []);
 
 	const [inputValue, setInputValue] = useState<string>("");
+	const [loadFinished, setLoadFinished] = useState<boolean>(false);
 
 	function add() {
-		if (inputValue.length <= 0) return;
+		if (!inputValue.length) return;
 		setTodos({ type: "add", content: inputValue });
 		setInputValue("");
 	}
 	function onChangeInputValue(e: any) {
-		setInputValue(e.target.value);
+		const value = e.target.value;
+		setInputValueDeleteMoreThanTwoSpaces(setInputValue, value);
 	}
 
 	function remove(id: string) {
@@ -142,7 +147,14 @@ const Home: NextPage = () => {
 		if (id && switchId && pos && id !== switchId) setTodos({ type: "switch", id, switchId, pos });
 	}
 	useEffect(() => {
-		loadTodos();
+		const timer = setTimeout(() => {
+			loadTodos();
+			setLoadFinished(true);
+		}, 500);
+
+		return () => {
+			clearTimeout(timer);
+		};
 	}, []);
 
 	const finishedFontColor = useColorModeValue("gray.300", "gray.600");
@@ -172,6 +184,8 @@ const Home: NextPage = () => {
 					</Heading>
 
 					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
+
+					<LoadingEffect loadFinished={loadFinished} />
 					<Todos
 						todos={todos}
 						commands={{ remove: remove, check: check, update: update }}

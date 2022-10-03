@@ -10,7 +10,7 @@ type FormProps = {
 const Form: React.FC<FormProps> = ({ onChangeInputValue, inputValue, add }) => {
 	const { colorMode } = useColorMode();
 
-	function pressEnter(e: any) {
+	function onKeyPressEnter(e: any) {
 		if (e.key !== "Enter") return;
 
 		add();
@@ -24,7 +24,7 @@ const Form: React.FC<FormProps> = ({ onChangeInputValue, inputValue, add }) => {
 					borderRightRadius={0}
 					onChange={onChangeInputValue}
 					value={inputValue}
-					onKeyPress={pressEnter}
+					onKeyPress={onKeyPressEnter}
 					placeholder="新しいタスクを追加"
 				/>
 				<Button colorScheme="teal" borderLeftRadius={0} onClick={add}>

@@ -2,6 +2,7 @@ export function setInputValueDeleteMoreThanTwoSpaces(setCallback: (setValue: str
 	if (!value.replace(/^\s/g, "").length) {
 		setCallback("");
 	} else {
-		setCallback(value.replace(/\ {2,}/g, " ").replace(/　{2,}/g, "　"));
+		// setCallback(value.replace(/\ {2,}/g, " ").replace(/　{2,}/g, "　"));
+		setCallback(value);
 	}
 }

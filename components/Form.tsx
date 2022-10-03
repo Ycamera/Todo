@@ -25,6 +25,7 @@ const Form: React.FC<FormProps> = ({ onChangeInputValue, inputValue, add }) => {
 					onChange={onChangeInputValue}
 					value={inputValue}
 					onKeyPress={pressEnter}
+					placeholder="新しいタスクを追加"
 				/>
 				<Button colorScheme="teal" borderLeftRadius={0} onClick={add}>
 					<AddIcon />

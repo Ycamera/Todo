@@ -156,7 +156,7 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Todo -タスク管理アプリ-</title>
+				<title>Todo -タスク管理-</title>
 				<meta name="description" content="日々のタスク管理アプリ" />
 				<link rel="icon" href="/favicon.ico" />
 				<link rel="apple-touch-icon-precomposed" href="/favicon.ico" />

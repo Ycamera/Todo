@@ -1,7 +1,8 @@
-import { Box, Flex, Text, useColorModeValue, useColorMode } from "@chakra-ui/react";
+import { Box, Flex, Text, useColorModeValue, useColorMode, useBoolean } from "@chakra-ui/react";
 import { CheckIcon, DeleteIcon, SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 
 import React, { useState, useRef, useEffect, useContext } from "react";
+import Motion from "./Motion";
 
 import { TodoState, TodosProps, TaskPosition } from "../libs/type";
 import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
@@ -53,6 +54,7 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 	const checkColor = useColorModeValue("teal.500", "teal.200");
 
 	const { colorMode } = useColorMode();
+	const [hover, setHover] = useBoolean();
 
 	return (
 		<Box
@@ -81,8 +83,18 @@ const CheckButton: React.FC<CheckButtonProps> = ({ id, check, finish }) => {
 					boxShadow: shadowHover(colorMode),
 				},
 			}}
+			onMouseEnter={setHover.on}
+			onMouseLeave={setHover.off}
 		>
-			{finish && <CheckIcon w="0.8rem" h="0.8rem" color={checkColor} />}
+			<CheckIcon
+				w="0.8rem"
+				h="0.8rem"
+				color={checkColor}
+				clipPath={
+					finish || hover ? "polygon(0 0, 100% 0, 100% 100%, 0% 100%)" : "polygon(0 0, 0 0, 0 100%, 0% 100%)"
+				}
+				transition="0.3s"
+			/>
 		</Box>
 	);
 };

@@ -196,18 +196,15 @@ const Todo: React.FC<TodoState> = ({
 				{...(!finish && { className: "task" })}
 				id={id}
 				userSelect="none"
-				// border="0.06rem solid transparent"
+				border="2px solid transparent"
 				borderRadius={5}
 				boxShadow={shallowShadow(colorMode)}
 				{...(dragId === id && {
-					outline: `0.1rem solid rgba(49, 151, 149, 1)`,
-					// borderColor: "rgba(49, 151, 149, 1)",
+					borderColor: "rgba(49, 151, 149, 1)",
 				})}
 				{...(currentFocus && {
-					outline: `0.06rem solid ${getColors(useColorModeValue, "inputFocusColor")}`,
-					// borderColor: getColors(useColorModeValue, "inputFocusColor"),
+					borderColor: getColors(useColorModeValue, "inputFocusColor"),
 				})}
-				zIndex="1"
 			>
 				<CheckButton id={id} check={check} finish={finish} />
 				<Flex flex="1" p="0.5rem" pos="relative" alignItems="center">

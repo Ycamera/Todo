@@ -7,7 +7,7 @@ import { Box, Heading, useColorMode, useColorModeValue } from "@chakra-ui/react"
 
 import Layout from "../components/Layout";
 import MyContainer from "../components/MyContainer";
-import ChangeColorMode from "../components/ChangeColorMode";
+import ChangeColorModeButton from "../components/ChangeColorModeButton";
 import LoadingEffect from "../components/LoadingEffect";
 import Form from "../components/Form";
 import Motion from "../components/Motion";
@@ -16,7 +16,7 @@ import getDate from "../libs/getDate";
 import { saveTodosOnLocalStrage } from "../libs/localStorage";
 import { Todos, DoneTodos, ClearDoneTodos } from "../components/Todos";
 import { TodoState } from "../libs/type";
-import { setInputValueDeleteMoreThanTwoSpaces } from "../libs/changeInputValue";
+import { setInputValueDeleteFirstSpace } from "../libs/changeInputValue";
 
 const FirstRenderMotion: React.FC<{ children: ReactNode }> = ({ children }) => {
 	return (
@@ -114,23 +114,23 @@ const Home: NextPage = () => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const [loadFinished, setLoadFinished] = useState<boolean>(false);
 
-	function add() {
+	function add(): void {
 		if (!inputValue.length) return;
 		setTodos({ type: "add", content: inputValue });
 		setInputValue("");
 	}
-	function onChangeInputValue(e: any) {
+	function onChangeInputValue(e: any): void {
 		const value = e.target.value;
-		setInputValueDeleteMoreThanTwoSpaces(setInputValue, value);
+		setInputValueDeleteFirstSpace(setInputValue, value);
 	}
 
-	function remove(id: string) {
+	function remove(id: string): void {
 		setTodos({ type: "remove", id: id });
 	}
-	function check(id: string) {
+	function check(id: string): void {
 		setTodos({ type: "check", id: id });
 	}
-	function clearChecked() {
+	function clearChecked(): void {
 		setTodos({ type: "clearChecked" });
 	}
 
@@ -138,14 +138,14 @@ const Home: NextPage = () => {
 		setTodos({ type: "update", id: id, content: content });
 	}
 
-	function loadTodos() {
+	function loadTodos(): void {
 		const localTodos = localStorage.getItem("todos");
 		if (localTodos !== null) {
 			setTodos({ type: "loadLocalTodos", localTodos: JSON.parse(localTodos) });
 		}
 	}
 
-	function switchTodo(id: string, switchId: string, pos: string) {
+	function switchTodo(id: string, switchId: string, pos: string): void {
 		if (id && switchId && pos && id !== switchId) setTodos({ type: "switch", id, switchId, pos });
 	}
 	useEffect(() => {
@@ -172,7 +172,7 @@ const Home: NextPage = () => {
 
 			<Layout>
 				<MyContainer>
-					<ChangeColorMode />
+					<ChangeColorModeButton />
 					<Box as="section">
 						<Heading
 							as="h1"

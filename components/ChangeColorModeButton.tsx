@@ -1,11 +1,9 @@
-import { Box, Button, useColorMode, Flex, useColorModeValue } from "@chakra-ui/react";
+import { useColorMode, Flex, useColorModeValue } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-import React, { ReactNode, useEffect } from "react";
+import React from "react";
 import Motion from "./Motion";
-import { Slot } from "@radix-ui/react-slot";
-import { shadow, shadowHover } from "../libs/shadow";
 
-import { formatWithOptions } from "util";
+import { shadow, shadowHover } from "../libs/shadow";
 
 const Circle: React.FC = () => {
 	const { colorMode } = useColorMode();
@@ -44,7 +42,7 @@ const Circle: React.FC = () => {
 	);
 };
 
-const ChangeColorMode = () => {
+const ChangeColorModeButton = () => {
 	const { colorMode, toggleColorMode } = useColorMode();
 
 	const sunColor = useColorModeValue("gray.400", "gray.600");
@@ -87,4 +85,4 @@ const ChangeColorMode = () => {
 	);
 };
 
-export default ChangeColorMode;
+export default ChangeColorModeButton;

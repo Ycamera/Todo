@@ -6,7 +6,7 @@ import Motion from "./Motion";
 
 import { TodoState, TodosProps, TaskPosition } from "../libs/type";
 import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
-import { setInputValueDeleteMoreThanTwoSpaces } from "../libs/changeInputValue";
+import { setInputValueDeleteFirstSpace } from "../libs/changeInputValue";
 import { getColors } from "../libs/getColors";
 
 type DeleteButtonProps = {
@@ -160,7 +160,7 @@ const Todo: React.FC<TodoState> = ({
 
 	function onChangeInputValue(e: any) {
 		const value = e.target.value;
-		setInputValueDeleteMoreThanTwoSpaces(setInputValue, value);
+		setInputValueDeleteFirstSpace(setInputValue, value);
 	}
 
 	const [currentFocus, setCurrentFocus] = useBoolean();

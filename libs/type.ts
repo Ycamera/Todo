@@ -17,12 +17,6 @@ export type TodoAction = {
 	localTodos?: TodoState[];
 };
 
-type SwitchTodo = {
-	id: string;
-	switchId: string;
-	pos: string;
-};
-
 export type TodosProps = {
 	todos: TodoState[];
 	commands: any;

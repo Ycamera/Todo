@@ -207,6 +207,7 @@ const Todo: React.FC<TodoState> = ({
 					outline: `0.06rem solid ${getColors(useColorModeValue, "inputFocusColor")}`,
 					borderColor: getColors(useColorModeValue, "inputFocusColor"),
 				})}
+				zIndex="1"
 			>
 				<CheckButton id={id} check={check} finish={finish} />
 				<Flex flex="1" p="0.5rem" pos="relative" alignItems="center">

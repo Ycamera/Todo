@@ -163,13 +163,10 @@ const Todo: React.FC<TodoState> = ({
 		setInputValueDeleteMoreThanTwoSpaces(setInputValue, value);
 	}
 
-	const [currentFocus, setCurrentFocus] = useState<boolean>(false);
-	function focusInput() {
-		setCurrentFocus(true);
-	}
+	const [currentFocus, setCurrentFocus] = useBoolean();
 	function leaveFocus() {
 		update(id, inputValue);
-		setCurrentFocus(false);
+		setCurrentFocus.off();
 	}
 
 	const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -205,7 +202,6 @@ const Todo: React.FC<TodoState> = ({
 				w="100%"
 				my="1rem"
 				pos="relative"
-				{...(!finish && { className: "task" })}
 				id={id}
 				userSelect="none"
 				border="2px solid transparent"
@@ -234,7 +230,7 @@ const Todo: React.FC<TodoState> = ({
 								overflowY: "hidden",
 							}}
 							value={inputValue}
-							onClick={focusInput}
+							onSelect={setCurrentFocus.on}
 							onChange={(e) => {
 								onChangeInputValue(e);
 								resizeTextarea();
@@ -292,8 +288,6 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 
 		for (let i = 0; i < children.length; i++) {
 			const el = children[i];
-			const className = el.classList.contains("task");
-			if (!className) continue;
 
 			const rect = el.getBoundingClientRect();
 

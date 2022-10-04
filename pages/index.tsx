@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState, useReducer } from "react";
 import { v4 as uuid } from "uuid";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Box, Heading, useColorMode, useColorModeValue } from "@chakra-ui/react";
 
 import Layout from "../components/Layout";
@@ -17,6 +17,14 @@ import { saveTodosOnLocalStrage } from "../libs/localStorage";
 import { Todos, DoneTodos, ClearDoneTodos } from "../components/Todos";
 import { TodoState } from "../libs/type";
 import { setInputValueDeleteMoreThanTwoSpaces } from "../libs/changeInputValue";
+
+const FirstRenderMotion: React.FC<{ children: ReactNode }> = ({ children }) => {
+	return (
+		<Motion initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0, delay: 0.01 }}>
+			{children}
+		</Motion>
+	);
+};
 
 function todoReducer(state: TodoState[], action: any) {
 	let index;
@@ -165,44 +173,45 @@ const Home: NextPage = () => {
 			<Layout>
 				<MyContainer>
 					<ChangeColorMode />
-					<Heading
-						as="h1"
-						fontSize="3rem"
-						mx="auto"
-						textAlign={"center"}
-						mt="2.5rem"
-						filter={`drop-shadow(0 0.2rem 0.1rem rgba(0,0,0,${colorMode === "light" ? 0.3 : 1}))`}
-					>
-						Todo
-					</Heading>
-
-					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
-
-					<LoadingEffect loadFinished={loadFinished} />
-					{loadFinished && (
-						<Motion
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ duration: 0, delay: 0.01 }}
+					<Box as="section">
+						<Heading
+							as="h1"
+							fontSize="3rem"
+							mx="auto"
+							textAlign={"center"}
+							mt="2.5rem"
+							filter={`drop-shadow(0 0.2rem 0.1rem rgba(0,0,0,${colorMode === "light" ? 0.3 : 1}))`}
 						>
-							<Box>
+							Todo
+						</Heading>
+
+						<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
+
+						<LoadingEffect loadFinished={loadFinished} />
+						{loadFinished && (
+							<FirstRenderMotion>
 								<Todos todos={todos} commands={{ remove, check, update }} switchTodo={switchTodo} />
-								{todos.some((todo: TodoState) => todo.finish) && (
-									<Heading
-										as="h2"
-										fontSize="1.5rem"
-										mx="auto"
-										textAlign={"center"}
-										mt="8rem"
-										color={finishedFontColor}
-									>
-										Done
-									</Heading>
-								)}
+							</FirstRenderMotion>
+						)}
+					</Box>
+
+					{loadFinished && todos.some((todo: TodoState) => todo.finish) && (
+						<FirstRenderMotion>
+							<Box as="section">
+								<Heading
+									as="h2"
+									fontSize="1.5rem"
+									mx="auto"
+									textAlign={"center"}
+									mt="8rem"
+									color={finishedFontColor}
+								>
+									Done
+								</Heading>
 								<ClearDoneTodos todos={todos} clearChecked={clearChecked} />
 								<DoneTodos todos={todos} commands={{ remove: remove, check: check }} />
 							</Box>
-						</Motion>
+						</FirstRenderMotion>
 					)}
 				</MyContainer>
 			</Layout>

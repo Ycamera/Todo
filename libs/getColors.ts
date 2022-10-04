@@ -1,4 +1,10 @@
-type ColorProps = "grayButton" | "clickableBg" | "clickableBgHover" | "fontColor" | "finishedFontColor";
+type ColorProps =
+	| "grayButton"
+	| "clickableBg"
+	| "clickableBgHover"
+	| "fontColor"
+	| "finishedFontColor"
+	| "inputFocusColor";
 
 export function getColors(useColorModeValue: (a: string, b: string) => any, color: ColorProps) {
 	switch (color) {
@@ -16,6 +22,9 @@ export function getColors(useColorModeValue: (a: string, b: string) => any, colo
 
 		case "finishedFontColor":
 			return useColorModeValue("gray.300", "gray.600");
+
+		case "inputFocusColor":
+			return useColorModeValue("#3182ce", "#63b3ed");
 
 		default:
 			return useColorModeValue("gray.400", "gray.400");

@@ -151,8 +151,13 @@ const Todo: React.FC<TodoState> = ({
 		setInputValueDeleteMoreThanTwoSpaces(setInputValue, value);
 	}
 
+	const [currentFocus, setCurrentFocus] = useState<boolean>(false);
+	function focusInput() {
+		setCurrentFocus(true);
+	}
 	function leaveFocus() {
 		update(id, inputValue);
+		setCurrentFocus(false);
 	}
 
 	const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -186,15 +191,21 @@ const Todo: React.FC<TodoState> = ({
 			{/* <SwitchLine position={closestPosition?.position}> */}
 			<Flex
 				w="100%"
-				boxShadow={shallowShadow(colorMode)}
 				my="1rem"
 				pos="relative"
 				{...(!finish && { className: "task" })}
 				id={id}
 				userSelect="none"
+				border="0.06rem solid transparent"
+				borderRadius={5}
+				boxShadow={shallowShadow(colorMode)}
 				{...(dragId === id && {
-					boxShadow:
-						"0 0.4rem 0.8rem -0.5rem rgba(49, 151, 149, 1), 0 -0.4rem 0.8rem -0.5rem rgba(49, 151, 149, 1)",
+					outline: `0.1rem solid rgba(49, 151, 149, 1)`,
+					borderColor: "rgba(49, 151, 149, 1)",
+				})}
+				{...(currentFocus && {
+					outline: `0.06rem solid ${getColors(useColorModeValue, "inputFocusColor")}`,
+					borderColor: getColors(useColorModeValue, "inputFocusColor"),
 				})}
 			>
 				<CheckButton id={id} check={check} finish={finish} />
@@ -213,6 +224,7 @@ const Todo: React.FC<TodoState> = ({
 								overflowY: "hidden",
 							}}
 							value={inputValue}
+							onClick={focusInput}
 							onChange={(e) => {
 								onChangeInputValue(e);
 								resizeTextarea();

@@ -7,7 +7,7 @@ import { Box, Heading, useColorMode, useColorModeValue } from "@chakra-ui/react"
 
 import Layout from "../components/Layout";
 import MyContainer from "../components/MyContainer";
-import ChangeColorModeButton from "../components/ChangeColorModeButton";
+
 import LoadingEffect from "../components/LoadingEffect";
 import Form from "../components/Form";
 import Motion from "../components/Motion";
@@ -164,57 +164,54 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>Todo -タスク管理-</title>
+				<title>Todo -タスク管理アプリ-</title>
 				<meta name="description" content="日々のタスク管理アプリ" />
 				<link rel="icon" href="/favicon.ico" />
 				<link rel="apple-touch-icon-precomposed" href="/favicon.ico" />
 			</Head>
 
-			<Layout>
-				<MyContainer>
-					<ChangeColorModeButton />
-					<Box as="section">
-						<Heading
-							as="h1"
-							fontSize="3rem"
-							mx="auto"
-							textAlign={"center"}
-							mt="2.5rem"
-							filter={`drop-shadow(0 0.2rem 0.1rem rgba(0,0,0,${colorMode === "light" ? 0.3 : 1}))`}
-						>
-							Todo
-						</Heading>
+			<MyContainer as="main">
+				<Box as="section">
+					<Heading
+						as="h1"
+						fontSize="3rem"
+						mx="auto"
+						textAlign={"center"}
+						mt="2.5rem"
+						filter={`drop-shadow(0 0.2rem 0.1rem rgba(0,0,0,${colorMode === "light" ? 0.3 : 1}))`}
+					>
+						Todo
+					</Heading>
 
-						<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
+					<Form onChangeInputValue={onChangeInputValue} add={add} inputValue={inputValue} />
 
-						<LoadingEffect loadFinished={loadFinished} />
-						{loadFinished && (
-							<FirstRenderMotion>
-								<Todos todos={todos} commands={{ remove, check, update }} switchTodo={switchTodo} />
-							</FirstRenderMotion>
-						)}
-					</Box>
-
-					{loadFinished && todos.some((todo: TodoState) => todo.finish) && (
+					<LoadingEffect loadFinished={loadFinished} />
+					{loadFinished && (
 						<FirstRenderMotion>
-							<Box as="section">
-								<Heading
-									as="h2"
-									fontSize="1.5rem"
-									mx="auto"
-									textAlign={"center"}
-									mt="8rem"
-									color={finishedFontColor}
-								>
-									Done
-								</Heading>
-								<ClearDoneTodos todos={todos} clearChecked={clearChecked} />
-								<DoneTodos todos={todos} commands={{ remove: remove, check: check }} />
-							</Box>
+							<Todos todos={todos} commands={{ remove, check, update }} switchTodo={switchTodo} />
 						</FirstRenderMotion>
 					)}
-				</MyContainer>
-			</Layout>
+				</Box>
+
+				{loadFinished && todos.some((todo: TodoState) => todo.finish) && (
+					<FirstRenderMotion>
+						<Box as="section">
+							<Heading
+								as="h2"
+								fontSize="1.5rem"
+								mx="auto"
+								textAlign={"center"}
+								mt="8rem"
+								color={finishedFontColor}
+							>
+								Done
+							</Heading>
+							<ClearDoneTodos todos={todos} clearChecked={clearChecked} />
+							<DoneTodos todos={todos} commands={{ remove: remove, check: check }} />
+						</Box>
+					</FirstRenderMotion>
+				)}
+			</MyContainer>
 		</>
 	);
 };

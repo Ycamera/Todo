@@ -2,7 +2,6 @@ import { Box, Flex, Text, useColorModeValue, useColorMode, useBoolean } from "@c
 import { CheckIcon, DeleteIcon, SmallCloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 
 import React, { useState, useRef, useEffect, useContext } from "react";
-import Motion from "./Motion";
 
 import { TodoState, TodosProps, TaskPosition } from "../libs/type";
 import { shadow, shadowHover, shallowShadow } from "../libs/shadow";
@@ -199,6 +198,7 @@ const Todo: React.FC<TodoState> = ({
 		<>
 			{/* <SwitchLine position={closestPosition?.position}> */}
 			<Flex
+				as="li"
 				w="100%"
 				my="1rem"
 				pos="relative"
@@ -259,7 +259,7 @@ const Todo: React.FC<TodoState> = ({
 };
 
 export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, b) => {} }) => {
-	const tasksRef = useRef<HTMLDivElement>(null);
+	const tasksRef = useRef<any>(null);
 
 	let taskPosition: TaskPosition[] = [];
 	const [dragId, setDragId] = useState<string>("");
@@ -399,7 +399,7 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 
 	return (
 		<TaskPositionContext.Provider value={{ dragTask, dragTaskTouch }}>
-			<Box mt="2rem" ref={tasksRef}>
+			<Box as="ul" mt="2rem" ref={tasksRef}>
 				{todos.map((todo) => {
 					return (
 						!todo.finish && (
@@ -420,7 +420,7 @@ export const Todos: React.FC<TodosProps> = ({ todos, commands, switchTodo = (a, 
 
 export const DoneTodos: React.FC<TodosProps> = ({ todos, commands }) => {
 	return (
-		<Box mt="2rem">
+		<Box as="ul" mt="2rem">
 			{todos.map((todo) => {
 				return todo.finish && <Todo {...todo} {...commands} key={todo.id} />;
 			})}

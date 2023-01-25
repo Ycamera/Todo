@@ -1,4 +1,4 @@
-#Todo -タスク管理アプリ-
+# Todo -タスク管理アプリ-
 
 <h3>ディレクトリ構成</h3>
 <pre>
@@ -33,6 +33,6 @@
 </pre>
 
 <h3>主要技術</h3>
-Next.js https://nextjs.org/
-Chakra-ui https://chakra-ui.com/
-Typescript https://www.typescriptlang.org/
+- Next.js https://nextjs.org/ <br>
+- Chakra-ui https://chakra-ui.com/ <br>
+- Typescript https://www.typescriptlang.org/ <br>
